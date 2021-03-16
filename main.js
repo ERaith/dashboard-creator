@@ -70,15 +70,7 @@ function allowDrop(ev) {
     ev.preventDefault();
 }
 
-function drag(ev) {
-    if (ev.type === "touchstart") {
-        mobile_item_selec = ev.target
-            .closest(".drag-drawflow")
-            .getAttribute("data-node");
-    } else {
-        ev.dataTransfer.setData("node", ev.target.getAttribute("data-node"));
-    }
-}
+
 
 function drop(ev) {
     if (ev.type === "touchend") {

@@ -143,14 +143,15 @@ DashboardCreater = function (parent, config) {
 
         switch (name) {
             case "dbclick":
+                let uid = uuidv4();
                 let dbclick = `
-                <div class="title-box" id="1234"><i class="fas fa-table"></i> Table Selection</div>
-                  <div class="box dbclickbox" data-dbclick = "modal">
+                <div class="title-box"><i class="fas fa-table"></i> Table Selection</div>
+                  <div class="box dbclickbox" id=${uid}>
                     Db Click here
                   </div>
                 `;
 
-                let id = editor.addNode(
+                editor.addNode(
                     "dbclick",
                     0,
                     1,
@@ -161,11 +162,8 @@ DashboardCreater = function (parent, config) {
                     dbclick
                 );
 
-                let dblClickNodes = document.querySelectorAll("div[data-dbclick]");
-
-                dblClickNodes.forEach((node) => {
-                    node.onclick = showpopup;
-                });
+                let node = document.getElementById(uid);
+                node.onclick = showpopup;
 
                 break;
             case "graph":

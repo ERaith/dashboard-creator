@@ -1,29 +1,32 @@
-DashboardCreater = function (parent, config) {
+DashboardCreator = function (parent, config) {
+
     var me = this;
-    var title = "Dashboard Creator";
     var editor;
     var modal;
     var defaultConfig = {
-        style: {},
-    };
-    //**************************************************************************
-    //** Constructor
-    //**************************************************************************
-    var init = function () {
-        var div = document.createElement("div");
-        let header = document.createElement("header");
-        header.innerHTML = `<h2>${title}</h2>`;
-        div.append(header);
+        style: {
 
-        let wrapper = document.createElement("div");
-        wrapper.className = "wrapper";
-        div.append(wrapper);
+        }
+    };
+
+
+  //**************************************************************************
+  //** Constructor
+  //**************************************************************************
+    var init = function () {
+
+        var div = document.createElement("div");
+        div.style.width = "100%";
+        div.style.height = "100%";
+        div.style.display = "flex";
+        parent.appendChild(div);
+
 
         let leftColumn = document.createElement("div");
         leftColumn.className = "col";
 
         let drawFlow = document.createElement("div");
-        drawFlow.id = "drawflow";
+        drawFlow.className = "drawflow";
         drawFlow.ondrop = drop;
         drawFlow.ondragover = allowDrop;
 
@@ -32,25 +35,29 @@ DashboardCreater = function (parent, config) {
         leftColumn.appendChild(tableNode);
         leftColumn.appendChild(graphNode);
 
-        wrapper.appendChild(leftColumn);
-        wrapper.appendChild(drawFlow);
-        parent.appendChild(div);
-        createDrawFlowEnvironment();
+        div.appendChild(leftColumn);
+        div.appendChild(drawFlow);
+
+        createDrawFlowEnvironment(drawFlow);
         createModal(parent);
     };
 
-    var createModal = (mountingPoint) => {
+
+  //**************************************************************************
+  //** createModal
+  //**************************************************************************
+    var createModal = (parent) => {
         modal = document.createElement("div");
         modal.className = "modal";
         modal.style.display = "none";
 
-        div = document.createElement("div");
+        let div = document.createElement("div");
         div.className = "modal-content";
 
         let close = document.createElement("span");
         close.className = "close";
         close.onclick = closemodal;
-        close.innerHTML = `           
+        close.innerHTML = `
         <span class="close">&times;</span>
         `;
 
@@ -62,18 +69,17 @@ DashboardCreater = function (parent, config) {
         div.appendChild(close);
         div.appendChild(content);
         modal.appendChild(div);
-        mountingPoint.appendChild(modal);
+        parent.appendChild(modal);
     };
 
-    var createDrawFlowEnvironment = () => {
-        let id = document.getElementById("drawflow");
-        editor = new Drawflow(id);
+    var createDrawFlowEnvironment = (parent) => {
+        editor = new Drawflow(parent);
         editor.reroute = true;
         editor.start();
     };
 
     var createNode = (nodeName, faName, title) => {
-        node = document.createElement("div");
+        let node = document.createElement("div");
         node.className = "drag-drawflow";
         node.draggable = "true";
         node.ondragstart = drag;
@@ -143,7 +149,7 @@ DashboardCreater = function (parent, config) {
 
         switch (name) {
             case "dbclick":
-                let uid = uuidv4();
+                let uid = "_"+new Date().getTime();//uuidv4();
                 let dbclick = `
                 <div class="title-box"><i class="fas fa-table"></i> Table Selection</div>
                   <div class="box dbclickbox" id=${uid}>

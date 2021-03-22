@@ -24,6 +24,7 @@ DashboardCreater = function (parent, config) {
 
         let drawFlow = document.createElement("div");
         drawFlow.id = "drawflow";
+
         drawFlow.ondrop = drop;
         drawFlow.ondragover = allowDrop;
 
@@ -35,7 +36,90 @@ DashboardCreater = function (parent, config) {
         wrapper.appendChild(leftColumn);
         wrapper.appendChild(drawFlow);
         parent.appendChild(div);
+
+        // Need access to Environment for the rest
         createDrawFlowEnvironment();
+
+        let exportBtn = document.createElement("div");
+        exportBtn.className = "btn-export";
+        exportBtn.innerText = "Export";
+        exportBtn.onclick = function () {
+            let exportedData = editor.export();
+            console.log(exportedData);
+        };
+        wrapper.appendChild(exportBtn);
+
+        let clearBtn = document.createElement("div");
+        clearBtn.className = "btn-clear";
+        clearBtn.innerText = "Clear";
+        clearBtn.onclick = function () {
+            editor.clearModuleSelected();
+        };
+        wrapper.appendChild(clearBtn);
+
+        // Lock Buttons
+        let lockWrapperBtn = document.createElement("div");
+        lockWrapperBtn.className = "btn-lock";
+        lockWrapperBtn.onclick = function () {
+            if (editor.editor_mode == "fixed") {
+                editor.editor_mode = "edit";
+                console.log(editor.zoom)
+                unlock.style.display = "block";
+                lock.style.display = "none"; 
+            } else {
+                editor.editor_mode = "fixed";
+                unlock.style.display = "none";
+                lock.style.display = "block";
+            }
+        };
+        wrapper.appendChild(lockWrapperBtn);
+
+        let unlock = document.createElement("div");
+        let unlockIcon = document.createElement("i");
+        unlockIcon.className = "fas fa-lock-open";
+        unlock.appendChild(unlockIcon);
+        let lock = document.createElement("div");
+        lock.style.display = "none";
+        let lockIcon = document.createElement("i");
+        lockIcon.className = "fas fa-lock";
+        lock.appendChild(lockIcon);
+
+        lockWrapperBtn.appendChild(unlock);
+        lockWrapperBtn.appendChild(lock);
+
+        // Zoom Icons
+        let zoomBar = document.createElement("div");
+        zoomBar.className = "bar-zoom";
+
+        let zoomOut = document.createElement("div");
+        let zoomOutIcon = document.createElement("svg");
+        zoomOutIcon.className = "fas fa-search-minus";
+        zoomOut.onclick = function () {
+            editor.zoom_out();
+        };
+        zoomOut.appendChild(zoomOutIcon);
+
+        let zoomIn = document.createElement("div");
+        let zoomInIcon = document.createElement("svg");
+        zoomInIcon.className = "fas fa-search-plus";
+        zoomIn.onclick = function () {
+            editor.zoom_in();
+        };
+        zoomIn.appendChild(zoomInIcon);
+
+        let zoomReset = document.createElement("div");
+        let zoomResetIcon = document.createElement("svg");
+        zoomResetIcon.className = "fas fa-search";
+        zoomReset.onclick = function () {
+            editor.zoom_reset();
+        };
+        zoomReset.appendChild(zoomResetIcon);
+
+        zoomBar.appendChild(zoomOut);
+        zoomBar.appendChild(zoomIn);
+        zoomBar.appendChild(zoomReset);
+
+        drawFlow.appendChild(zoomBar);
         createModal(parent);
     };
 
@@ -69,7 +153,10 @@ DashboardCreater = function (parent, config) {
         let id = document.getElementById("drawflow");
         editor = new Drawflow(id);
         editor.reroute = true;
+        editor.editor_mode = "edit";
         editor.start();
+
+        this.zoom = () => editor.zoom_in();
     };
 
     var createNode = (nodeName, faName, title) => {
@@ -143,7 +230,7 @@ DashboardCreater = function (parent, config) {
 
         switch (name) {
             case "dbclick":
-                let uid = uuidv4();
+                let uid = "_"+new Date().getTime();
                 let dbclick = `
                 <div class="title-box"><i class="fas fa-table"></i> Table Selection</div>
                   <div class="box dbclickbox" id=${uid}>
@@ -188,7 +275,7 @@ DashboardCreater = function (parent, config) {
                 break;
 
             default:
-                console.log("here");
+                console.log("No graph was found");
         }
     }
 
